@@ -1,10 +1,30 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Text Copy Extension</title>
-    <script src="popup.js"></script>
-  </head>
-  <body>
-    <button id="copyButton">Do!</button>
-  </body>
+
+<head>
+  <title>Text Copy Extension</title>
+  <script src="popup.js"></script>
+</head>
+<style>
+  #copyButton {
+    background-color: black;
+    background-image: linear-gradient(to bottom, #000000, #333333);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-image 1000ms;
+  }
+
+  #copyButton:hover {
+    background-image: linear-gradient(to bottom, #333333, #666666);
+  }
+</style>
+
+<body>
+  <button id="copyButton">Do!</button>
+</body>
+
 </html>
