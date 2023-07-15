@@ -7,6 +7,7 @@
     "clipboardWrite",
     "tabs",
     "webRequest",
+    "storage",
     "scripting",
     "activeTab"
   ],

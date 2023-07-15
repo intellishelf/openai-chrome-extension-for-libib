@@ -4,6 +4,8 @@ chrome.runtime.onMessage.addListener(function (request) {
     }
 });
 
+
+
 function fetchVisibleText(currentDocument) {
     let visibleText = '';
 

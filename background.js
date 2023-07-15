@@ -1,25 +1,28 @@
 
-chrome.runtime.onMessage.addListener(
-  function (request) {
-    if (request.contentScriptQuery == "query") {
-      chrome.tabs.query({ "active": true }, function (tabs) {
-        askGPT(request.message);
-      });
-    }
-  });
+chrome.runtime.onMessage.addListener(request => {
+  if (request.contentScriptQuery == "query") {
+    chrome.storage.local.get(["openaiKey"]).then((result) =>
+      askGPT(request.message, result.openaiKey));
+  }
+});
 
 
-function askGPT(text) {
+function askGPT(text, openaiKey) {
 
-  let prompt = "The user copied the following text from a browser tab which explain a book. Find in that text a name of a book, author, description, number of pages, year of publication and ISBN. Return it in JSON format: "
+  let prompt =
+    `The user copied the following text from a browser tab which explains a book.` +
+    `Find in that text a name of the book, author, description, number of pages, year of publication and ISBN.` +
+    `Return it in JSON format: `
+
   let message = prompt + text;
 
+  console.log(message)
   fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-      'Authorization': `Bearer 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`
+      'Authorization': `Bearer ` + openaiKey
     },
     body: JSON.stringify({
       "model": "gpt-3.5-turbo-16k",
@@ -37,24 +40,27 @@ function askGPT(text) {
     .then(bookInfo => {
 
       console.log(bookInfo)
+      //addToLibib(bookInfo);
 
-      const formData = new FormData();
-      formData.append('title', bookInfo["book"]);
-      formData.append('creators', bookInfo["author"]);
-      formData.append('manual-entry-library-select', '863770');
-      formData.append('manual-entry-type', 'book');
 
-      var url = 'https://www.libib.com/library/manual-entry/submit';
-
-      fetch(url, {
-        method: 'POST',
-        body: formData
-      })
-        .then(function (response) {
-          return response.json()
-        })
-        .then(d => console.log(d));
     })
+}
+
+function addToLibib(bookInfo) {
+  var libibUrl = 'https://www.libib.com/library/manual-entry/submit';
+
+  const formData = new FormData();
+  formData.append('title', bookInfo["book"]);
+  formData.append('creators', bookInfo["author"]);
+  formData.append('manual-entry-library-select', '863770');
+  formData.append('manual-entry-type', 'book');
+
+  fetch(libibUrl, {
+    method: 'POST',
+    body: formData
+  })
+    .then(response => response.json())
+    .then(d => console.log(d));
 }
 
 

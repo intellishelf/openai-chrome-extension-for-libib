@@ -6,7 +6,7 @@
   <script src="popup.js"></script>
 </head>
 <style>
-  #copyButton {
+  button {
     background-color: black;
     background-image: linear-gradient(to bottom, #000000, #333333);
     color: white;
@@ -18,12 +18,14 @@
     transition: background-image 1000ms;
   }
 
-  #copyButton:hover {
+  button:hover {
     background-image: linear-gradient(to bottom, #333333, #666666);
   }
 </style>
 
 <body>
+  <input id="openaiKey"></button>
+  <button id="storeOpenaiToken">Store OpenAI token</button>
   <button id="copyButton">Do!</button>
 </body>
 
