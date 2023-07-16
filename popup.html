@@ -1,32 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-bs-theme="dark">
 
 <head>
   <title>Text Copy Extension</title>
   <script src="popup.js"></script>
+  <link href="./bootstrap.min.css" rel="stylesheet">
+  <script src="bootstrap.bundle.min"></script>
 </head>
-<style>
-  button {
-    background-color: black;
-    background-image: linear-gradient(to bottom, #000000, #333333);
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-image 1000ms;
-  }
 
-  button:hover {
-    background-image: linear-gradient(to bottom, #333333, #666666);
-  }
-</style>
+<body data-bs-theme="dark" style="min-width: 200px;" class="w-100 p-1">
 
-<body>
-  <input id="openaiKey"></button>
-  <button id="storeOpenaiToken">Store OpenAI token</button>
-  <button id="copyButton">Do!</button>
+  <div>
+    <div class="m-3">
+      <label for="openaiKey" class="form-label">OpenAI key</label>
+      <input class="form-control" id="openaiKey">
+    </div>
+
+    <div class="m-3">
+      <button class="btn btn-primary" id="storeOpenaiToken">Set OpenAI key</button>
+
+    </div>
+    <div class="m-3">
+      <button class="btn btn-primary" id="copyButton">Fetch description</button>
+    </div>
+
+  </div>
 </body>
 
 </html>

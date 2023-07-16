@@ -17,6 +17,15 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.local.get(["openaiKey"]).then((result) => {
         document.getElementById("openaiKey").value = result.openaiKey;
     });
+
+
+    chrome.runtime.onMessage.addListener(request => {
+        if (request.command == "showBookInfo") {
+
+            console.log(request.bookInfo)
+        }
+    });
+
 });
 
 

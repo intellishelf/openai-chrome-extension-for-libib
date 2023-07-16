@@ -1,4 +1,4 @@
-chrome.runtime.onMessage.addListener(function (request) {
+chrome.runtime.onMessage.addListener((request) => {
     if (request.message == 'readPage') {
         chrome.runtime.sendMessage({ message: fetchVisibleText(window.document), contentScriptQuery: 'query' });
     }
