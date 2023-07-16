@@ -1,9 +1,8 @@
 
-
 chrome.contextMenus.create({
   id: 'intellishelf',
-  title: "Child Item 1",
-  contexts: ["all"],
+  title: "Fetch image",
+  contexts: ["all"]
 });
 
 chrome.runtime.onMessage.addListener(request => {
@@ -13,6 +12,52 @@ chrome.runtime.onMessage.addListener(request => {
   }
 });
 
+chrome.runtime.onMessage.addListener(request => {
+  if (request.command == "fetchImageAsDataUrl")
+    fetch(request.url)
+      .then(response => response.blob())
+      .then((blob) => {
+        chrome.tabs.query({ active: true }, (tabs) => {
+          var reader = new FileReader();
+
+          reader.onloadend = () =>
+            chrome.tabs.sendMessage(tabs[0].id, { command: 'handleImgDataUrl', imgDataUrl: reader.result })
+
+          reader.readAsDataURL(blob);
+        }
+        )
+      })
+});
+
+
+chrome.runtime.onMessage.addListener(request => {
+  if (request.command == "storeImage")
+    storeImage(request.url)
+});
+
+chrome.contextMenus.onClicked.addListener((info) => {
+  if (info.menuItemId === "intellishelf")
+    if (info.srcUrl)
+      storeImage(info.srcUrl)
+    else
+      chrome.tabs.query({ active: true }, (tabs) =>
+        chrome.tabs.sendMessage(tabs[0].id, { command: 'readImage' })
+      )
+});
+
+
+function storeImage(url) {
+  console.log(url)
+  fetch(url)
+    .then(response => response.blob())
+    .then(blob => {
+      var reader = new FileReader();
+
+      reader.onloadend = () => chrome.storage.local.set({ imageData: reader.result });
+
+      reader.readAsDataURL(blob);
+    });
+}
 
 function askGPT(text, openaiKey) {
 
@@ -44,15 +89,7 @@ function askGPT(text, openaiKey) {
   })
     .then(r => r.json())
     .then(d => JSON.parse(d.choices[0].message.content))
-    .then(bookInfo => {
-
-      console.log(bookInfo)
-
-      // addToLibib(bookInfo);
-
-      chrome.runtime.sendMessage({ command: "showBookInfo", bookInfo: bookInfo });
-
-    })
+    .then(bookInfo => addToLibib(bookInfo))
 }
 
 function addToLibib(bookInfo) {
@@ -67,13 +104,28 @@ function addToLibib(bookInfo) {
   formData.append('publish_year', bookInfo["year"]);
   formData.append('length_of', bookInfo["pages"]);
   formData.append('ean_isbn' + bookInfo["isbn"].length, bookInfo["isbn"]);
+  formData.append('tags', "ihor");
 
-  fetch(libibUrl, {
-    method: 'POST',
-    body: formData
-  })
-    .then(response => response.json())
-    .then(d => console.log(d));
+
+  console.log(bookInfo)
+
+  chrome.storage.local
+    .get('imageData', (result) =>
+      fetch(result.imageData)
+        .then(response => response.blob())
+        .then(blob => {
+          console.log(blob)
+          formData.append('image-0', blob);
+
+          console.log(formData)
+          return fetch(libibUrl, {
+            method: 'POST',
+            body: formData
+          });
+        })
+        .then(response => response.json())
+        .then(d => console.log(d)))
+
 }
 
 
